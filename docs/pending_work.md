@@ -1,18 +1,21 @@
 # Pending Work
 
 ## WIP
-- `chore/scaffold` (base `dev` @ 357693d, 2026-09-25): initial scaffold commit. Includes
-  docs, tracking files, and the FastAPI + HTMX skeleton.
+None.
 
 ## Current focus
-Land the scaffold on `dev` through a PR, then start the chat agent spec.
+Chat agent spec.
 
 ## Next up
-1. PR #1 (https://github.com/Hacke2367/AGENTIC_PROTFOLIO/pull/1) is open and waits for the owner to merge it.
-2. `/start_work` + `/spec` for the chat agent: routing and context switch, rate limiting,
-   and the red lines.
-3. `/spec` for the front page: resume layout, load animation, and theme.
-4. `/plan` both specs.
+1. `/start_work` for `feature/chat-agent` (base `dev`), then `/spec`: routing and context
+   switch, rate limiting, and the red lines. Owner input needed: the GitHub/LinkedIn URLs
+   (these don't block the spec).
+2. `/spec` for the front page: resume layout, load animation, and theme.
+3. `/plan` both specs.
+
+## Done
+- 2026-09-25: `chore/scaffold` merged into `dev` (PR #1). Docs, tracking files, and the
+  FastAPI + HTMX skeleton.
 
 ## Open items
 - [ ] Get the GitHub and LinkedIn URLs from the owner (resume contact links).
