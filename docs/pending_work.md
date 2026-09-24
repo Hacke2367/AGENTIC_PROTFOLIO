@@ -1,15 +1,14 @@
 # Pending Work
 
 ## WIP
-None.
+- `feature/chat-agent` (base `dev` @ a9952d5, 2026-09-25): the per-project chat agent.
 
 ## Current focus
-Chat agent spec.
+Chat agent spec: `docs/specs/01_chat_agent.md`.
 
 ## Next up
-1. `/start_work` for `feature/chat-agent` (base `dev`), then `/spec`: routing and context
-   switch, rate limiting, and the red lines. Owner input needed: the GitHub/LinkedIn URLs
-   (these don't block the spec).
+1. `/spec` → `docs/specs/01_chat_agent.md`: routing and context switch, rate limiting, and the
+   red lines. After that, wait for the owner's yes before `/plan`.
 2. `/spec` for the front page: resume layout, load animation, and theme.
 3. `/plan` both specs.
 
