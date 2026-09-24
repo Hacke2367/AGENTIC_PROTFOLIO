@@ -8,7 +8,7 @@
 Land the scaffold on `dev` through a PR, then start the chat agent spec.
 
 ## Next up
-1. Open a PR from `chore/scaffold` into `dev`. The owner merges it.
+1. PR #1 (https://github.com/Hacke2367/AGENTIC_PROTFOLIO/pull/1) is open and waits for the owner to merge it.
 2. `/start_work` + `/spec` for the chat agent: routing and context switch, rate limiting,
    and the red lines.
 3. `/spec` for the front page: resume layout, load animation, and theme.
