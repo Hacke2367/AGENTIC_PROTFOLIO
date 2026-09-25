@@ -1,47 +1,32 @@
 # Pending Work
 
-Last updated: 2026-09-26 (step 02 built, not shipped)
+Last updated: 2026-09-26 (handoff: step 02 built, draft PR #3)
 
 ## WIP
-- `feature/front-page` (base `dev` @ 837c5ec, 2026-09-26): the front page. Uncommitted
-  throwaway prototype (dev-only `?variant=` route, `/prototype/*` routes in `app/main.py`,
-  `app/prototype_front_page.py`, `app/templates/prototype_front_page/`,
-  `app/static/prototype_empty.html`); capture it on a `spike/` branch once a variant wins.
+- `feature/front-page` (base `dev` @ 837c5ec, 2026-09-26): the front page. Built, pushed, draft
+  PR #3 (https://github.com/Hacke2367/AGENTIC_PROTFOLIO/pull/3). The UI prototype is kept on
+  `spike/front-page-prototype` @ 10c42cc (pushed; never merge it).
 
 ## Current focus
-Step 02 (front page), stage `Build`: built and verified (55 offline tests, 20/20 browser
-checks), not yet shipped. Spec 02 approved by the owner on 2026-09-26; plan at
-`docs/specs/02_front_page_impl.md`; prototype captured on `spike/front-page-prototype` @ 10c42cc. The owner picked prototype variant D (`?variant=d`: Geist +
-electric blue agent console) and wants it polished to a premium finish; `frontend-design` was
-adopted for that (P-002). Round 1: the owner kept B's two-pane layout and rejected A and C;
-round 2: D chosen over E (Satoshi + saffron). Polish pass done (the owner is reviewing it):
-AA-contrast tokens (midnight ink #0C1631), hero CTAs, `/resume` emphasised in the bar,
-title-card image slots, segmented command controls, the active agent pings on switch, favicon,
-footer, tidier mobile.
-
-Owner decisions so far (2026-09-26), to carry into `docs/specs/02_front_page.md`:
-- The page shows email only, no phone. `/resume` serves the PDF, phone number included.
-- Sections: profile, skills, experience, education, certifications, projects, contact, plus
-  `/why-hire-me` and `/feedback` (feedback stored privately, never shown publicly).
-- A premium light theme, built on B's layout: a sticky agent console with an agent map, and a
-  bottom sheet on mobile.
-- Six proof-backed tags (`--always-building` ...); the "successful startup" tag is dropped.
-- Four static slash commands per project (`/usp`, `/pipeline`, `/hardest-problem`,
-  `/philosophy`) plus site commands in a top bar.
-- `/why-hire-me` text: Claude's draft for now; the owner rewrites it later.
-- Image slots stay empty for now; GitHub/LinkedIn stay pending (email only).
+Step 02 (front page), status `Blocked`: built and verified, waiting on the owner.
+- Built: `app/content.py` (all copy and the 20 command answers), static slash commands, the
+  agent map, the mobile bottom sheet, private `/feedback`, the variant D theme, and the resume
+  PDF (4.2 MB → 359 KB).
+- Verified: gate 55/55 offline; 20/20 browser checks in headless Chrome, plus row hover and a
+  Tab walk over 57 controls.
+- Owner decisions for this step are in `docs/specs/02_front_page.md` §9.
 
 ## Next up
-1. **Resume point.** Step 02 is built on `feature/front-page`. Next: the owner reviews it
-   locally (`uvicorn app.main:app`), sends design tweaks (they amend spec §7), and approves
-   the content in `app/content.py` (20 command answers, 6 flags, `/why-hire-me`: AC18). Then
-   `/ship` opens the PR into `dev`. The owner approves it, then `/plan`,
-   then build. Run the prototype: `./venv/Scripts/python.exe -m uvicorn app.main:app --port 8765`.
-   Read first: `docs/development_plan.md` (step 02 row), `app/prototype_front_page.py` (all
-   draft copy: tags, why-hire-me, the 20 command answers), and `app/templates/` (keep the
-   `#chat`, `#chat-log`, `#chat-state`, `#chat-input` and `#chat-title` IDs and the `hx-*`
-   attributes).
-2. Step 03 (deploy): see `docs/development_plan.md`.
+1. **Resume point.** Step 02 is `Blocked` on the owner, with draft PR #3 open. The owner:
+   - (a) sends design tweaks, which amend spec §7 and the CSS;
+   - (b) approves or edits `app/content.py`: `COMMANDS` (20), `FLAGS` (6), `WHY_HIRE` (AC18);
+   - (c) says whether the GitHub/LinkedIn URLs go on `/contact`.
+
+   Then apply the changes, re-run the gate, tick AC18 in the PR, and `/ship` (mark it ready).
+   Read first: `docs/specs/02_front_page_impl.md` §11, PR #3's checklist, and
+   `app/content.py`. Run it locally: `./venv/Scripts/python.exe -m uvicorn app.main:app --port 8765`.
+2. Step 03 (deploy): see `docs/development_plan.md`. It is blocked on revoking the AutoShorts
+   leaked key (see Open items).
 
 ## Done
 - 2026-09-26: `feature/chat-agent` merged into `dev` (PR #2). Per-project recruiter chat agent:
