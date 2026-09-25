@@ -255,4 +255,4 @@ ones need `OPENAI_API_KEY` in `.env`.
 - [x] `requirements-dev.txt`, `pytest.ini`, `.env.example`, gate in `.claude/devsystem.json`
 - [x] `tests/test_offline.py` green (`python -m pytest -q`)
 - [x] `tests/test_live.py` run with the real key; the AC2 hand check is done
-- [ ] Manual smoke test: `uvicorn app.main:app` → open each project, switch once, hit clarify once
+- [x] Manual smoke test: `uvicorn app.main:app` → open each project, switch once, hit clarify once

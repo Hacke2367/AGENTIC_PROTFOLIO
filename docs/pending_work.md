@@ -12,7 +12,7 @@ tests are done, and all 13 offline tests pass.
 - Re-run on 2026-09-26: 11/11 non-QA live tests pass, and 13/13 offline tests pass.
 
 ## Next up
-1. `/ship` step 01 (PR into `dev`).
+1. Owner reviews and merges the step 01 PR (`/merge_pr`).
 2. Steps 02 (front page) and 03 (deploy): see `docs/development_plan.md`.
 
 ## Done
