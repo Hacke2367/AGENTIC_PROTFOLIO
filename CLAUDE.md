@@ -31,3 +31,5 @@ only. Target host: Vercel (Python runtime).
 - `mattpocock-skills` is enabled for this project only. Use just `prototype`, `tdd`,
   `diagnosing-bugs`, `grilling`, always by full name (`/mattpocock-skills:prototype`).
   Never its `to-spec`, `implement`, `handoff` or `code-review`, which clash with devsystem.
+- `frontend-design` is the design skill for all UI work: load it
+  (`/frontend-design:frontend-design`) before changing templates or CSS. See `docs/tooling.md` P-002.
