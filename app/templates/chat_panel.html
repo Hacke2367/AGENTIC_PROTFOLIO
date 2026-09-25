@@ -1,0 +1,12 @@
+<div class="chat-panel">
+  <h3 id="chat-title">{{ project.name }}</h3>
+  <div id="chat-log" aria-live="polite">
+    <div class="msg reply">{{ greeting }}</div>
+  </div>
+  <form hx-post="/chat" hx-target="#chat-log" hx-swap="beforeend"
+        hx-indicator="#typing" hx-disabled-elt="find button">
+    {% include "_chat_fields.html" %}
+    <button type="submit">Send</button>
+  </form>
+  <p id="typing" class="htmx-indicator">Thinking…</p>
+</div>

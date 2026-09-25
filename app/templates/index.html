@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Abhishek Maurya</title>
+  <link rel="stylesheet" href="/static/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.4/dist/htmx.min.js"
+          integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+"
+          crossorigin="anonymous"></script>
+</head>
+<body>
+  <main>
+    <h1>Abhishek Maurya</h1>
+    {# Step 02 restyles this page; keep #chat and the hx-* attributes. #}
+    <ul class="projects">
+      {% for p in projects %}
+      <li>
+        <span>{{ p.name }}</span>
+        <button type="button" hx-get="/chat/open?project={{ p.slug }}" hx-target="#chat">
+          Talk to this project
+        </button>
+      </li>
+      {% endfor %}
+    </ul>
+    <section id="chat" aria-label="Project chat"></section>
+  </main>
+</body>
+</html>
