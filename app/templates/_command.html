@@ -1,0 +1,9 @@
+{# One slash-command exchange (spec 02): static, owner-approved text, autoescaped. #}
+<div class="msg user cmd">{{ cmd_label }}</div>
+{% if cmd == "pipeline" %}
+<div class="msg reply out"><ol class="flow">{% for step in answers.pipeline.built %}<li>{{ step }}</li>{% endfor %}{% for step in answers.pipeline.planned %}<li class="planned">{{ step }}</li>{% endfor %}</ol>{% if answers.pipeline.planned %}<p class="legend">Dashed steps are planned, not built yet.</p>{% endif %}</div>
+{% elif cmd == "help" %}
+<div class="msg reply out">{{ help }}</div>
+{% else %}
+<div class="msg reply out">{{ answers[cmd] }}</div>
+{% endif %}

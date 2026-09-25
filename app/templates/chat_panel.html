@@ -1,12 +1,21 @@
+{# The spec 01 chat panel plus the spec 02 console commands. #chat-title carries the active
+   project for the agent map (plan 02 D5); data-initial marks the server-rendered first panel,
+   which must not ping. Console commands post through /chat so they follow the active project
+   (plan 02 D4). #}
 <div class="chat-panel">
-  <h3 id="chat-title">{{ project.name }}</h3>
+  <h3 id="chat-title" data-active="{{ project.slug }}"{% if initial %} data-initial{% endif %}>{{ project.name }}</h3>
   <div id="chat-log" aria-live="polite">
     <div class="msg reply">{{ greeting }}</div>
+    {% if cmd %}{% include "_command.html" %}{% endif %}
   </div>
-  <form hx-post="/chat" hx-target="#chat-log" hx-swap="beforeend"
+  <div class="cmds" role="group" aria-label="Commands">
+    {%- for command in command_names %}<button type="button" hx-post="/chat" hx-vals='{"message": "/{{ command }}", "via": "button"}' hx-include="#chat-state" hx-target="#chat-log" hx-swap="beforeend scroll:#chat-log:bottom">/{{ command }}</button>{% endfor -%}
+  </div>
+  <form hx-post="/chat" hx-target="#chat-log" hx-swap="beforeend scroll:#chat-log:bottom"
         hx-indicator="#typing" hx-disabled-elt="find button">
     {% include "_chat_fields.html" %}
     <button type="submit">Send</button>
   </form>
   <p id="typing" class="htmx-indicator">Thinking…</p>
 </div>
+{% if open_sheet %}<input type="checkbox" id="sheet" hidden checked hx-swap-oob="true">{% endif %}

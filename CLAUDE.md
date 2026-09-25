@@ -13,6 +13,7 @@ project shape lives in `docs/project_context.md` — read that first, not this f
 - `knowledge/` — the agent-facing context actually loaded at runtime (built from
   `docs/projects/`).
 - `app/` — FastAPI app: `main.py` (routes), `agent.py` (routing/context-switch/OpenAI call),
+  `content.py` (all page copy + slash-command answers), `feedback.py` (private feedback),
   `templates/` (HTMX + Jinja2), `static/` (CSS, no custom JS).
 
 ## Stack
@@ -31,3 +32,5 @@ only. Target host: Vercel (Python runtime).
 - `mattpocock-skills` is enabled for this project only. Use just `prototype`, `tdd`,
   `diagnosing-bugs`, `grilling`, always by full name (`/mattpocock-skills:prototype`).
   Never its `to-spec`, `implement`, `handoff` or `code-review`, which clash with devsystem.
+- `frontend-design` is the design skill for all UI work: load it
+  (`/frontend-design:frontend-design`) before changing templates or CSS. See `docs/tooling.md` P-002.
