@@ -15,7 +15,7 @@ from fastapi.responses import HTMLResponse, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from app import agent, limits
+from app import agent, limits, prototype_front_page
 from app.agent import BY_SLUG, MAX_HISTORY, MAX_TURN_CHARS, PROJECTS, ChatState
 
 load_dotenv()
@@ -80,8 +80,34 @@ def load_state(token: str) -> ChatState | None:
 # --- routes -----------------------------------------------------------------------------
 
 @app.get("/", response_class=HTMLResponse)
-def index(request: Request):
+def index(request: Request, variant: str = ""):
+    # PROTOTYPE (step 02 UI directions, dev only): remove once the owner picks a variant.
+    if variant in prototype_front_page.VARIANTS and not os.getenv("VERCEL"):
+        ctx = prototype_front_page.context(variant)
+        return templates.TemplateResponse(request, ctx["template"], ctx)
     return templates.TemplateResponse(request, "index.html", {"projects": PROJECTS})
+
+
+# PROTOTYPE (step 02 round 2, dev only): static slash-command answers and a feedback stub.
+@app.get("/prototype/cmd", response_class=HTMLResponse)
+def prototype_cmd(request: Request, project: str = "", cmd: str = "", sheet: str = "1"):
+    if os.getenv("VERCEL") or project not in BY_SLUG:
+        return HTMLResponse("", status_code=404)
+    return templates.TemplateResponse(request, "prototype_front_page/_console_panel.html", {
+        "project": BY_SLUG[project], "greeting": agent.greeting(project),
+        "state_token": sign_state(ChatState(project)),
+        "cmd": cmd if cmd in prototype_front_page.COMMAND_NAMES else "",
+        "answers": prototype_front_page.COMMANDS[project],
+        "command_names": prototype_front_page.COMMAND_NAMES, "open_sheet": sheet != "0",
+    })
+
+
+@app.post("/prototype/feedback", response_class=HTMLResponse)
+def prototype_feedback(message: str = Form(""), website: str = Form("")):
+    if os.getenv("VERCEL"):
+        return HTMLResponse("", status_code=404)
+    return HTMLResponse('<p class="fb-done" role="status">Thanks, your words reached Abhishek. '
+                        '(Prototype: nothing was saved.)</p>')
 
 
 @app.get("/chat/open", response_class=HTMLResponse)

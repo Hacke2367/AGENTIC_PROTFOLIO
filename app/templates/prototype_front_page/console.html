@@ -1,0 +1,384 @@
+<!doctype html>
+{# PROTOTYPE, variant D polished (owner pick 2026-09-26; skin e is kept only for reference).
+   Plan: paper #F6F7FA, surface #FFFFFF, midnight ink #0C1631, slate #505A6E, faint #667085,
+   electric blue #2F5BFF, rules #E2E6EE / #C7CEDB (all text pairs pass WCAG AA). Geist for
+   everything; Geist Mono only for things you can run: commands, flags, agent names. The
+   console is the product and the page is its documentation. Dots are the motif (DMC,
+   DOT_TO_IMAGE). One load moment: the agent map draws. Every other motion answers an action:
+   the active agent pings, the mobile sheet slides. No custom JS: HTMX attributes and CSS only. #}
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ person.name }}</title>
+  <meta name="description" content="{{ person.role }}. Every project has its own AI agent you can question.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230C1631'/%3E%3Ctext x='16' y='20.5' font-family='Arial,sans-serif' font-size='12' font-weight='700' fill='white' text-anchor='middle'%3EAM%3C/text%3E%3C/svg%3E">
+  {% if skin == "d" %}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+  {% else %}
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  {% endif %}
+  <link rel="stylesheet" href="/static/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.4/dist/htmx.min.js"
+          integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+"
+          crossorigin="anonymous"></script>
+  <style>
+    .skin-d {
+      --bg: #F6F7FA; --surface: #FFFFFF; --ink: #0C1631; --muted: #505A6E; --faint: #667085;
+      --line: #E2E6EE; --line-strong: #C7CEDB; --grid: #D3D9E4;
+      --accent: #2F5BFF; --accent-ink: #2447E0; --accent-soft: rgba(47, 91, 255, .10); --ping: rgba(47, 91, 255, .45);
+      --btn: #2F5BFF; --btn-ink: #FFFFFF; --btn-hover: #2447E0; --good: #0E7A4C; --wip: #955700; --focus: #2F5BFF;
+      --user-bg: #ECF0FF; --reply-bg: #F2F4F8;
+      --shadow-sm: 0 1px 2px rgba(12, 22, 49, .06);
+      --shadow-lg: 0 1px 2px rgba(12, 22, 49, .04), 0 24px 48px -20px rgba(12, 22, 49, .20);
+      --sans: "Geist", system-ui, sans-serif; --mono: "Geist Mono", ui-monospace, monospace; --h1-weight: 600;
+    }
+    .skin-e {
+      --bg: #F5F4F1; --surface: #FFFFFF; --ink: #1A1916; --muted: #5A564E; --faint: #6E6960;
+      --line: #E5E1D9; --line-strong: #CFC9BD; --grid: #D8D2C6;
+      --accent: #F29D0A; --accent-ink: #9A5800; --accent-soft: rgba(242, 157, 10, .14); --ping: rgba(242, 157, 10, .5);
+      --btn: #1A1916; --btn-ink: #FFFFFF; --btn-hover: #3A372F; --good: #2E7D4F; --wip: #9A5800; --focus: #9A5800;
+      --user-bg: #FFF0D2; --reply-bg: #F3F1EC;
+      --shadow-sm: 0 1px 2px rgba(26, 25, 22, .06);
+      --shadow-lg: 0 1px 2px rgba(26, 25, 22, .04), 0 24px 48px -20px rgba(26, 25, 22, .20);
+      --sans: "Satoshi", system-ui, sans-serif; --mono: "JetBrains Mono", ui-monospace, monospace; --h1-weight: 700;
+    }
+    body { font-family: var(--sans); background: var(--bg); color: var(--ink); -webkit-font-smoothing: antialiased; }
+    ::selection { background: rgba(47, 91, 255, .18); }
+    :focus-visible { outline-color: var(--focus); }
+    h1, h2, h3, .role { text-wrap: balance; }
+    p, li, dd { text-wrap: pretty; }
+    @media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+
+    /* Command bar */
+    .bar { position: sticky; top: 0; z-index: 30; border-bottom: 1px solid var(--line);
+      background: color-mix(in srgb, var(--bg) 82%, transparent); backdrop-filter: saturate(160%) blur(14px); -webkit-backdrop-filter: saturate(160%) blur(14px); }
+    .bar-in { max-width: 1360px; margin: 0 auto; padding: 0 32px; height: 60px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 600; letter-spacing: -0.01em; color: var(--ink); text-decoration: none; white-space: nowrap; }
+    .mark { width: 28px; height: 28px; border-radius: 8px; background: var(--ink); color: #FFFFFF; display: grid; place-items: center; font-size: .7rem; font-weight: 700; letter-spacing: .02em; }
+    .bar nav { display: flex; align-items: center; gap: 2px; overflow-x: auto; scrollbar-width: none; }
+    .bar nav::-webkit-scrollbar { display: none; }
+    .bar nav a { font-family: var(--mono); font-size: .8rem; color: var(--muted); text-decoration: none; padding: 7px 10px; border-radius: 8px; white-space: nowrap; }
+    .bar nav a:hover { color: var(--ink); background: var(--accent-soft); }
+    .bar nav a.primary { margin-left: 8px; color: var(--ink); background: var(--surface); border: 1px solid var(--line-strong); box-shadow: var(--shadow-sm); }
+
+    /* Two panes */
+    .page { max-width: 1360px; margin: 0 auto; padding: 0 32px; display: grid; grid-template-columns: minmax(0, 1fr) clamp(360px, 31vw, 440px);
+      gap: clamp(32px, 4vw, 64px); align-items: start; }
+    main.col { max-width: none; margin: 0; padding: 56px 0 72px; min-width: 0; }
+
+    /* Hero */
+    .hero { position: relative; isolation: isolate; padding: 28px 0 8px; }
+    .hero::before { content: ""; position: absolute; inset: -60px -32px -32px -32px; z-index: -1;
+      background: radial-gradient(var(--grid) 1px, transparent 1.3px) 0 0 / 22px 22px;
+      -webkit-mask-image: radial-gradient(ellipse 70% 85% at 22% 35%, #000 25%, transparent 72%); mask-image: radial-gradient(ellipse 70% 85% at 22% 35%, #000 25%, transparent 72%); }
+    .hero h1 { font-size: clamp(2.75rem, 5.4vw, 4.6rem); font-weight: var(--h1-weight); letter-spacing: -0.045em; line-height: .96; margin: 0 0 20px; }
+    .hero .role { font-size: clamp(1.12rem, 1.6vw, 1.32rem); line-height: 1.4; max-width: 32ch; margin: 0 0 12px; }
+    .hero .cue { color: var(--muted); max-width: 52ch; margin: 0 0 26px; }
+    .hero code { font-family: var(--mono); font-size: .88em; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 1px 6px; white-space: nowrap; }
+    .cta { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 28px; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; height: 44px; padding: 0 18px; border-radius: 10px; font: 500 .95rem/1 var(--sans);
+      text-decoration: none; color: var(--ink); background: var(--surface); border: 1px solid var(--line-strong); box-shadow: var(--shadow-sm); cursor: pointer; }
+    .btn:hover { border-color: var(--ink); }
+    .btn.primary { color: var(--btn-ink); background: var(--btn); border-color: var(--btn); box-shadow: var(--shadow-sm), inset 0 1px 0 rgba(255, 255, 255, .2); }
+    .btn.primary:hover { background: var(--btn-hover); border-color: var(--btn-hover); }
+    .flags { display: flex; flex-wrap: wrap; gap: 8px; max-width: 580px; }
+    .flag { position: relative; }
+    .flag summary { list-style: none; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: .78rem; color: var(--ink);
+      background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px 6px 10px; box-shadow: var(--shadow-sm); }
+    .flag summary::-webkit-details-marker { display: none; }
+    .flag summary::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+    .flag summary:hover, .flag[open] summary { border-color: var(--line-strong); }
+    .flag p { position: absolute; z-index: 5; top: calc(100% + 8px); left: 0; width: max-content; max-width: 260px; margin: 0; padding: 10px 12px; border-radius: 10px;
+      background: var(--ink); color: #FFFFFF; font-size: .85rem; line-height: 1.45; box-shadow: 0 14px 30px -10px rgba(12, 22, 49, .45); }
+
+    /* Sections */
+    .block { padding-top: 96px; scroll-margin-top: 76px; }
+    .block > h2 { font-family: var(--mono); font-weight: 500; font-size: 1.35rem; letter-spacing: -0.01em; margin: 0 0 28px; }
+    .lede { color: var(--muted); margin: -14px 0 26px; max-width: 58ch; }
+
+    .project { display: grid; grid-template-columns: 180px minmax(0, 1fr); gap: 28px; padding: 30px 0; border-top: 1px solid var(--line); }
+    .project:last-of-type { border-bottom: 1px solid var(--line); }
+    .shot { position: relative; aspect-ratio: 4 / 5; overflow: hidden; border-radius: 14px; border: 1px solid var(--line);
+      background: radial-gradient(var(--grid) 1px, transparent 1.3px) 0 0 / 14px 14px, linear-gradient(165deg, var(--surface) 20%, var(--bg)); }
+    .shot span { position: absolute; left: 10px; bottom: 10px; font: 500 .7rem/1 var(--mono); color: var(--muted); background: var(--surface);
+      border: 1px solid var(--line); border-radius: 6px; padding: 5px 7px; }
+    .head { display: flex; align-items: baseline; justify-content: space-between; gap: 6px 14px; flex-wrap: wrap; margin-bottom: 8px; }
+    .project h3 { font-size: 1.5rem; font-weight: 600; letter-spacing: -0.025em; margin: 0; }
+    .status { display: inline-flex; align-items: center; gap: 6px; font-size: .8rem; color: var(--good); white-space: nowrap; }
+    .status::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+    .status.wip { color: var(--wip); }
+    .pitch { margin: 0 0 18px; max-width: 62ch; }
+    .stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin: 0 0 14px; }
+    .stats dt { font-size: 1.5rem; font-weight: 600; letter-spacing: -0.03em; font-variant-numeric: tabular-nums; }
+    .stats dd { margin: 2px 0 0; font-size: .82rem; line-height: 1.35; color: var(--muted); }
+    .stack { font-size: .85rem; color: var(--faint); margin: 0 0 18px; }
+    .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+    .talk { height: 40px; padding: 0 16px; border-radius: 10px; border: 1px solid var(--btn); background: var(--btn); color: var(--btn-ink);
+      font: 500 .92rem/1 var(--sans); cursor: pointer; box-shadow: var(--shadow-sm), inset 0 1px 0 rgba(255, 255, 255, .2); }
+    .talk:hover { background: var(--btn-hover); border-color: var(--btn-hover); }
+    .cmdset { display: grid; grid-template-columns: repeat(4, auto); gap: 1px; overflow: hidden; background: var(--line); border: 1px solid var(--line); border-radius: 10px; box-shadow: var(--shadow-sm); }
+    .cmdset button { height: 38px; padding: 0 11px; border: 0; background: var(--surface); color: var(--ink); font: 500 .78rem/1 var(--mono); cursor: pointer; }
+    .cmdset button:hover { background: color-mix(in srgb, var(--accent) 7%, var(--surface)); color: var(--accent-ink); }
+
+    .why .serious { font-size: clamp(1.12rem, 1.7vw, 1.35rem); line-height: 1.55; letter-spacing: -0.01em; max-width: 58ch; margin: 0 0 22px; }
+    .why .fun { max-width: 58ch; margin: 0; padding-left: 14px; border-left: 2px solid var(--accent); color: var(--muted); }
+    .why .fun b { color: var(--ink); font-weight: 600; }
+
+    .profile { font-size: 1.05rem; line-height: 1.65; max-width: 66ch; margin: 0 0 40px; }
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 44px; }
+    .grid2 h3 { font-size: 1rem; font-weight: 600; margin: 0 0 14px; }
+    .skills p, .entry { margin: 0 0 14px; font-size: .93rem; }
+    .skills b, .entry b { display: block; font-weight: 600; }
+    .skills span, .entry .m { color: var(--muted); }
+    .entry ul { margin: 8px 0 0; padding-left: 18px; }
+    .grid2 section + section { margin-top: 28px; }
+
+    .mail { font-size: clamp(1.4rem, 3vw, 2.1rem); font-weight: 600; letter-spacing: -0.03em; color: var(--ink); text-decoration: none; overflow-wrap: anywhere;
+      background: linear-gradient(var(--accent), var(--accent)) 0 100% / 100% 2px no-repeat; padding-bottom: 4px; }
+    .contact p { color: var(--muted); margin: 14px 0 20px; }
+
+    .fb { display: grid; gap: 14px; max-width: 620px; }
+    .fb label { display: grid; gap: 6px; font-size: .9rem; font-weight: 500; }
+    .fb label span { color: var(--faint); font-weight: 400; }
+    .fb textarea, .fb input { font: inherit; font-weight: 400; color: var(--ink); background: var(--surface); border: 1px solid var(--line-strong); border-radius: 10px; padding: 10px 12px; box-shadow: var(--shadow-sm); }
+    .fb textarea { resize: vertical; min-height: 110px; }
+    .fb .row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .fb .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+    .fb .btn { justify-self: start; }
+    .fb-done { max-width: 620px; margin: 0; padding: 16px 18px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+    .foot { margin-top: 96px; padding-top: 20px; border-top: 1px solid var(--line); display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; font-size: .85rem; color: var(--faint); }
+
+    /* Agent console */
+    .console { position: sticky; top: 76px; z-index: 2; height: calc(100vh - 92px); margin-top: 16px; display: flex; flex-direction: column; overflow: hidden;
+      background: var(--surface); border: 1px solid var(--line); border-radius: 20px; box-shadow: var(--shadow-lg); }
+    .c-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 18px 4px; }
+    .c-head strong { font-weight: 600; letter-spacing: -0.01em; }
+    .online { display: inline-flex; align-items: center; gap: 6px; margin-left: 10px; font-family: var(--mono); font-size: .72rem; color: var(--good); }
+    .online::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; box-shadow: 0 0 0 3px color-mix(in srgb, currentColor 22%, transparent); }
+    .peek { display: none; }
+
+    .map { position: relative; aspect-ratio: 400 / 164; margin: 6px 18px 12px; }
+    .map svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+    .edge { fill: none; stroke: var(--line-strong); stroke-width: 1.4; stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke .2s;
+      animation: draw .6s ease-out forwards; animation-delay: calc(.2s + var(--i) * .1s); }
+    .hub { fill: var(--surface); stroke: var(--ink); stroke-width: 1.5; }
+    .hub.router { fill: var(--ink); }
+    .map text { font-family: var(--mono); font-size: 10px; fill: var(--faint); }
+    .node { position: absolute; left: 59%; transform: translate(-7px, -50%); display: inline-flex; align-items: center; gap: 8px; padding: 2px 6px 2px 0;
+      background: none; border: 0; font: 500 .74rem/1 var(--mono); color: var(--muted); cursor: pointer; opacity: 0; animation: fade .35s ease-out forwards; animation-delay: calc(.5s + var(--i) * .1s); }
+    .node .dot { width: 14px; height: 14px; box-sizing: border-box; border-radius: 50%; border: 1.5px solid var(--line-strong); background: var(--surface); transition: border-color .2s, background .2s; }
+    .node:hover { color: var(--ink); }
+    .node:hover .dot { border-color: var(--accent); }
+    @keyframes draw { to { stroke-dashoffset: 0; } }
+    @keyframes fade { to { opacity: 1; } }
+    @keyframes ping { 0% { box-shadow: 0 0 0 0 var(--ping); } 70% { box-shadow: 0 0 0 11px transparent; } 100% { box-shadow: 0 0 0 5px var(--accent-soft); } }
+    {% for p in projects %}
+    .console:has([data-active="{{ p.slug }}"]) .node[data-p="{{ p.slug }}"] { color: var(--ink); }
+    .console:has([data-active="{{ p.slug }}"]) .node[data-p="{{ p.slug }}"] .dot { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 0 5px var(--accent-soft); animation: ping .8s ease-out; }
+    .console:has([data-active="{{ p.slug }}"]) .edge[data-p="{{ p.slug }}"] { stroke: var(--accent); stroke-width: 2; }
+    .page:has(.project[data-p="{{ p.slug }}"]:hover) .edge[data-p="{{ p.slug }}"] { stroke: var(--accent); }
+    .page:has(.project[data-p="{{ p.slug }}"]:hover) .node[data-p="{{ p.slug }}"] .dot { border-color: var(--accent); }
+    {% endfor %}
+
+    #chat { flex: 1; min-height: 0; display: flex; border-top: 1px solid var(--line); }
+    .console .chat-panel { flex: 1; min-height: 0; display: flex; flex-direction: column; margin: 0; padding: 14px 18px 16px; border: 0; border-radius: 0; }
+    .console #chat-title { font-size: .95rem; font-weight: 600; margin: 0 0 10px; }
+    .console #chat-log { flex: 1; min-height: 0; max-height: none; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--line-strong) transparent; }
+    .console .msg { font-size: .92rem; line-height: 1.5; }
+    .msg.cmd { font-family: var(--mono); font-size: .8rem; }
+    .msg.out { white-space: normal; }
+    .switch-notice { color: var(--accent-ink); }
+    .flow { list-style: none; margin: 0; padding: 0; }
+    .flow li { position: relative; padding: 0 0 11px 24px; font-size: .86rem; line-height: 1.4; }
+    .flow li::before { content: ""; position: absolute; left: 3px; top: 4px; width: 10px; height: 10px; box-sizing: border-box; border-radius: 50%; border: 2px solid var(--accent); background: var(--surface); }
+    .flow li::after { content: ""; position: absolute; left: 7.5px; top: 16px; bottom: -2px; width: 1px; background: var(--line-strong); }
+    .flow li:last-child { padding-bottom: 0; }
+    .flow li:last-child::after { display: none; }
+    .flow li.planned { color: var(--muted); }
+    .flow li.planned::before { border-style: dashed; border-color: var(--faint); }
+    .legend { margin: 10px 0 0; font-size: .78rem; color: var(--faint); }
+    /* In-console commands: the same segmented control as the project rows; 2 x 2 in a narrow console. */
+    .console { container-type: inline-size; }
+    .console .chat-panel .cmds { display: grid; grid-template-columns: repeat(4, auto); gap: 1px; width: max-content; max-width: 100%; margin-top: 10px; overflow: hidden;
+      background: var(--line); border: 1px solid var(--line); border-radius: 9px; }
+    .console .chat-panel .cmds button { height: 32px; padding: 0 9px; border: 0; border-radius: 0; background: var(--surface); color: var(--ink); font: 500 .74rem/1 var(--mono); }
+    .console .chat-panel .cmds button:hover { background: color-mix(in srgb, var(--accent) 7%, var(--surface)); color: var(--accent-ink); }
+    @container (max-width: 400px) { .console .chat-panel .cmds { grid-template-columns: 1fr 1fr; width: auto; } }
+    .console .chat-panel form { margin-top: 10px; }
+    .console .chat-panel form button { background: var(--btn); color: var(--btn-ink); border-radius: 10px; }
+    .console #chat-input { background: var(--bg); border-color: var(--line); border-radius: 10px; }
+
+    @media (max-width: 1023px) {
+      .bar-in { height: auto; padding: 10px 16px 8px; flex-direction: column; align-items: stretch; gap: 6px; }
+      .bar nav { margin: 0 -16px; padding: 0 12px; -webkit-mask-image: linear-gradient(90deg, #000 86%, transparent); mask-image: linear-gradient(90deg, #000 86%, transparent); }
+      .bar nav a.primary { margin-left: 4px; }
+      .page { grid-template-columns: 1fr; gap: 0; padding: 0 16px; }
+      main.col { padding: 28px 0 120px; }
+      .block { padding-top: 72px; scroll-margin-top: 104px; }
+      .project { grid-template-columns: 1fr; gap: 16px; }
+      .shot { aspect-ratio: 3 / 1; }
+      .stats { gap: 10px; }
+      .stats dt { font-size: 1.2rem; }
+      .talk { width: 100%; }
+      .cmdset { width: 100%; grid-template-columns: 1fr 1fr; }
+      .grid2, .fb .row { grid-template-columns: 1fr; gap: 0; }
+      .console { position: fixed; top: auto; left: 0; right: 0; bottom: 0; margin: 0; height: min(86vh, 720px); border-bottom: 0; border-radius: 20px 20px 0 0;
+        transform: translateY(calc(100% - 64px)); transition: transform .3s cubic-bezier(.2, .8, .2, 1); z-index: 40; box-shadow: 0 -14px 40px -14px rgba(12, 22, 49, .3); }
+      body:has(#sheet:checked) .console { transform: none; }
+      .c-head { min-height: 64px; box-sizing: border-box; padding: 10px 18px; cursor: pointer; }
+      .peek { display: inline-flex; font: 500 .78rem/1 var(--mono); color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 7px 11px; }
+      .peek .when-open, body:has(#sheet:checked) .peek .when-closed { display: none; }
+      body:has(#sheet:checked) .peek .when-open { display: inline; }
+      .map { max-width: 320px; }
+      .proto-switcher { bottom: 76px !important; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .edge { animation: none; stroke-dashoffset: 0; }
+      .node { animation: none; opacity: 1; }
+      .node .dot { animation: none !important; }
+      .console { transition: none; }
+    }
+  </style>
+</head>
+<body class="skin-{{ skin }}">
+<input type="checkbox" id="sheet" hidden>
+<header class="bar">
+  <div class="bar-in">
+    <a class="brand" href="#top"><span class="mark">AM</span>{{ person.name }}</a>
+    <nav aria-label="Sections">
+      {% for label, href in nav %}<a href="{{ href }}"{% if href.endswith(".pdf") %} class="primary" download{% endif %}>{{ label }}</a>{% endfor %}
+    </nav>
+  </div>
+</header>
+
+<div class="page" id="top">
+  <main class="col">
+    <section class="hero">
+      <h1>{{ person.name }}</h1>
+      <p class="role">{{ person.role }}.</p>
+      <p class="cue">Every project below has its own AI agent. Ask it anything, or run a command like <code>/pipeline</code>.</p>
+      <div class="cta">
+        <a class="btn primary" href="#projects">See the projects</a>
+        <a class="btn" href="/static/resume.pdf" download>Download resume (PDF)</a>
+      </div>
+      <div class="flags">
+        {% for flag, proof in flags %}<details class="flag" name="flags"><summary>{{ flag }}</summary><p>{{ proof }}</p></details>{% endfor %}
+      </div>
+    </section>
+
+    <section id="projects" class="block">
+      <h2>/projects</h2>
+      {% for p in projects %}
+      <article class="project" data-p="{{ p.slug }}">
+        <div class="shot" aria-hidden="true"><span>{{ p.short }}</span></div>
+        <div>
+          <div class="head">
+            <h3>{{ p.name }}</h3>
+            <span class="status{% if 'progress' in p.status or 'development' in p.status %} wip{% endif %}">{{ p.status }}</span>
+          </div>
+          <p class="pitch">{{ p.pitch }}</p>
+          <dl class="stats">{% for v, l in p.stats %}<div><dt>{{ v }}</dt><dd>{{ l }}</dd></div>{% endfor %}</dl>
+          <p class="stack">{{ p.stack | join(", ") }}</p>
+          <div class="actions">
+            <button type="button" class="talk" hx-get="/prototype/cmd?project={{ p.slug }}" hx-target="#chat">Talk to this project</button>
+            <div class="cmdset" role="group" aria-label="Commands for {{ p.name }}">
+              {% for c in command_names %}<button type="button" hx-get="/prototype/cmd?project={{ p.slug }}&cmd={{ c }}" hx-target="#chat">/{{ c }}</button>{% endfor %}
+            </div>
+          </div>
+        </div>
+      </article>
+      {% endfor %}
+    </section>
+
+    <section id="why-hire-me" class="block why">
+      <h2>/why-hire-me</h2>
+      <p class="serious">{{ why.serious }}</p>
+      <p class="fun"><b>Less serious:</b> {{ why.fun }}</p>
+    </section>
+
+    <section id="about" class="block">
+      <h2>/about</h2>
+      <p class="profile">{{ person.profile }}</p>
+      <div class="grid2">
+        <section>
+          <h3>Skills</h3>
+          <div class="skills">{% for g, s in skills %}<p><b>{{ g }}</b><span>{{ s }}</span></p>{% endfor %}</div>
+        </section>
+        <div>
+          <section>
+            <h3>Experience</h3>
+            <div class="entry"><b>{{ exp.title }}, {{ exp.org }}</b><span class="m">{{ exp.when }}</span>
+              <ul>{% for x in exp.points %}<li>{{ x }}</li>{% endfor %}</ul></div>
+          </section>
+          <section>
+            <h3>Education</h3>
+            <div class="entry"><b>{{ edu.degree }}</b><span class="m">{{ edu.school }}, {{ edu.when }}. {{ edu.note }}</span></div>
+          </section>
+          <section>
+            <h3>Certifications</h3>
+            {% for t, o, d in certs %}<div class="entry"><b>{{ t }}, {{ o }}</b><span class="m">{{ d }}</span></div>{% endfor %}
+          </section>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact" class="block contact">
+      <h2>/contact</h2>
+      <a class="mail" href="mailto:{{ person.email }}">{{ person.email }}</a>
+      <p>Based in {{ person.place }}, India.</p>
+      <a class="btn" href="/static/resume.pdf" download>Download resume (PDF)</a>
+    </section>
+
+    <section id="feedback" class="block">
+      <h2>/feedback</h2>
+      <p class="lede">Any feedback on my journey so far? A few honest words help.</p>
+      <form class="fb" hx-post="/prototype/feedback" hx-swap="outerHTML">
+        <label>Your feedback<textarea name="message" required maxlength="500" placeholder="What stood out, and what could be better?"></textarea></label>
+        <div class="row">
+          <label>Name <span>(optional)</span><input name="name" maxlength="80" autocomplete="name"></label>
+          <label>Company <span>(optional)</span><input name="company" maxlength="80" autocomplete="organization"></label>
+        </div>
+        <label class="hp" aria-hidden="true">Leave this empty<input name="website" tabindex="-1" autocomplete="off"></label>
+        <button type="submit" class="btn primary">Send feedback</button>
+      </form>
+    </section>
+
+    <footer class="foot">
+      <span>© 2026 {{ person.name }}</span>
+      <span>Built with FastAPI, HTMX and OpenAI. No custom JavaScript.</span>
+    </footer>
+  </main>
+
+  <aside class="console" aria-label="Project agents">
+    <label class="c-head" for="sheet">
+      <span><strong>Talk to a project</strong><span class="online">5 agents online</span></span>
+      <span class="peek"><span class="when-closed">Open</span><span class="when-open">Close</span></span>
+    </label>
+    <div class="map">
+      <svg viewBox="0 0 400 164" preserveAspectRatio="none" aria-hidden="true">
+        <path class="edge" style="--i: 0" pathLength="1" d="M24 82 L120 82"/>
+        {% for p in projects %}{% set y = 18 + loop.index0 * 32 %}
+        <path class="edge" data-p="{{ p.slug }}" style="--i: {{ loop.index }}" pathLength="1" d="M120 82 C 178 82, 178 {{ y }}, 236 {{ y }}"/>
+        {% endfor %}
+        <circle class="hub" cx="24" cy="82" r="6"/>
+        <circle class="hub router" cx="120" cy="82" r="7"/>
+        <text x="24" y="104" text-anchor="middle">you</text>
+        <text x="120" y="104" text-anchor="middle">router</text>
+      </svg>
+      {% for p in projects %}{% set y = 18 + loop.index0 * 32 %}
+      <button type="button" class="node" data-p="{{ p.slug }}" style="--i: {{ loop.index }}; top: {{ (y / 164 * 100) | round(3) }}%"
+              hx-get="/prototype/cmd?project={{ p.slug }}" hx-target="#chat"><span class="dot"></span>{{ p.short }}</button>
+      {% endfor %}
+    </div>
+    {# ?open=<slug>&cmd=<name>&sheet=1 pre-loads a state, for screenshots and sharing. #}
+    {% set q = request.query_params %}
+    <section id="chat" hx-get="/prototype/cmd?project={{ q.get('open', 'autoshorts') }}&cmd={{ q.get('cmd', '') }}&sheet={{ q.get('sheet', '0') }}" hx-trigger="load"></section>
+  </aside>
+</div>
+{% include "prototype_front_page/_switcher.html" %}
+</body>
+</html>

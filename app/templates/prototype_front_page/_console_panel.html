@@ -1,0 +1,24 @@
+{# PROTOTYPE: chat panel for the console, with a static slash-command answer. Keeps the real
+   chat IDs and posts to the real /chat endpoint. #}
+<div class="chat-panel" data-active="{{ project.slug }}">
+  <h3 id="chat-title">{{ project.name }}</h3>
+  <div id="chat-log" aria-live="polite">
+    <div class="msg reply">{{ greeting }}</div>
+    {% if cmd %}
+    <div class="msg user cmd">/{{ cmd }}</div>
+    {% if cmd == "pipeline" %}
+    <div class="msg reply out"><ol class="flow">{% for s in answers.pipeline %}<li>{{ s }}</li>{% endfor %}{% for s in answers.get("planned", []) %}<li class="planned">{{ s }}</li>{% endfor %}</ol>{% if answers.get("planned") %}<p class="legend">Dashed steps are planned, not built yet.</p>{% endif %}</div>
+    {% else %}
+    <div class="msg reply out">{{ answers[cmd] }}</div>
+    {% endif %}
+    {% endif %}
+  </div>
+  <div class="cmds" aria-label="Commands">{% for c in command_names %}<button type="button" hx-get="/prototype/cmd?project={{ project.slug }}&cmd={{ c }}" hx-target="#chat">/{{ c }}</button>{% endfor %}</div>
+  <form hx-post="/chat" hx-target="#chat-log" hx-swap="beforeend"
+        hx-indicator="#typing" hx-disabled-elt="find button">
+    {% include "_chat_fields.html" %}
+    <button type="submit">Send</button>
+  </form>
+  <p id="typing" class="htmx-indicator">Thinking…</p>
+</div>
+{% if open_sheet %}<input type="checkbox" id="sheet" hidden checked hx-swap-oob="true">{% endif %}

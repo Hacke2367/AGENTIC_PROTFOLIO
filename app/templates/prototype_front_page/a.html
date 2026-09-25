@@ -1,0 +1,168 @@
+<!doctype html>
+{# PROTOTYPE variant A, "Constellation": single reading column, dot-to-dot hero that draws the
+   initials on load, projects as open blocks (no cards), chat in a right-hand drawer
+   (bottom sheet on mobile). #}
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ person.name }}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.4/dist/htmx.min.js"
+          integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+"
+          crossorigin="anonymous"></script>
+  <style>
+    :root { --paper: #F6F8FB; --ink: #152033; --slate: #56627A; --rule: #D5DCE8; --cobalt: #2446C9; --dot: #A9B7D6; --live: #1F8A5B; --wip: #B7791F; }
+    body { font-family: "Schibsted Grotesk", system-ui, sans-serif; background: var(--paper); color: var(--ink); }
+    main { max-width: 1080px; padding: 0 24px 120px; }
+
+    .hero { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 32px; align-items: center; min-height: min(78vh, 680px);
+      background-image: radial-gradient(var(--rule) 1px, transparent 1.2px); background-size: 22px 22px; margin: 0 -24px; padding: 48px 24px; }
+    .hero h1 { font-size: clamp(2.6rem, 6vw, 4.6rem); line-height: 1; letter-spacing: -0.03em; font-weight: 800; margin: 0 0 18px; }
+    .hero .role { font-size: 1.3rem; line-height: 1.35; margin: 0 0 22px; max-width: 30ch; }
+    .hero .cue { color: var(--slate); max-width: 44ch; margin: 0 0 28px; }
+    .hero .jump { display: inline-block; background: var(--cobalt); color: #fff; padding: 12px 18px; border-radius: 8px; text-decoration: none; font-weight: 600; }
+    .hero svg { width: 100%; height: auto; overflow: visible; }
+
+    /* The one load moment: dots appear in order, then the pen joins them. */
+    .c-dot { fill: var(--cobalt); opacity: 0; animation: pop .25s ease-out forwards; }
+    .c-num { fill: var(--slate); font-size: 11px; opacity: 0; animation: pop .25s ease-out forwards; }
+    .c-line { fill: none; stroke: var(--cobalt); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round;
+      stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw 1.1s ease-in-out forwards; }
+    @keyframes pop { to { opacity: 1; } }
+    @keyframes draw { to { stroke-dashoffset: 0; } }
+
+    main > section { max-width: 760px; padding: 56px 0 0; }
+    h2 { font-size: 1.6rem; letter-spacing: -0.01em; margin: 0 0 20px; }
+    .profile { font-size: 1.15rem; line-height: 1.6; }
+
+    .project { position: relative; padding: 28px 0 28px 28px; border-top: 1px solid var(--rule); }
+    .project::before { content: ""; position: absolute; left: 4px; top: 38px; width: 10px; height: 10px; border-radius: 50%; background: var(--cobalt); }
+    .project h3 { font-size: 1.45rem; margin: 0; }
+    .status { font-size: .9rem; color: var(--live); margin: 4px 0 10px; }
+    .status.wip { color: var(--wip); }
+    .pitch { margin: 0 0 16px; max-width: 62ch; }
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 0 0 14px; }
+    .stats b { display: block; font-size: 1.35rem; color: var(--cobalt); }
+    .stats span { font-size: .88rem; color: var(--slate); }
+    .stack { font-size: .92rem; color: var(--slate); margin: 0 0 16px; }
+    .talk { background: transparent; border: 1.5px solid var(--cobalt); color: var(--cobalt); padding: 9px 16px; border-radius: 8px; font: 600 1rem/1 inherit; font-family: inherit; cursor: pointer; }
+    .talk:hover { background: var(--cobalt); color: #fff; }
+
+    .skills dt { font-weight: 700; margin-top: 14px; }
+    .skills dd { margin: 2px 0 0; color: var(--slate); }
+    .item h3 { font-size: 1.1rem; margin: 0; }
+    .item .meta { color: var(--slate); margin: 2px 0 10px; }
+    .item ul { margin: 0; padding-left: 18px; }
+    .certs li { margin-bottom: 8px; }
+    .contact a { font-size: 1.4rem; color: var(--cobalt); font-weight: 600; }
+
+    /* Chat drawer: hidden while #chat is empty, slides in when a project is opened. */
+    .drawer { box-sizing: border-box; position: fixed; top: 0; right: 0; bottom: 0; width: min(440px, 100%); background: #fff; border-left: 1px solid var(--rule);
+      box-shadow: -12px 0 40px rgba(21,32,51,.12); padding: 20px; transform: translateX(105%); transition: transform .3s ease; z-index: 50; overflow-y: auto; }
+    .drawer:has(#chat:not(:empty)) { transform: none; }
+    .drawer .close { position: absolute; top: 18px; right: 18px; background: none; border: 0; font: 600 .95rem inherit; font-family: inherit; color: var(--slate); cursor: pointer; }
+    .drawer { display: flex; flex-direction: column; }
+    .drawer #chat, .drawer .chat-panel { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+    .drawer .chat-panel { border: 0; padding: 0; margin: 0; }
+    .drawer #chat-log { flex: 1; max-height: none; }
+
+    @media (max-width: 760px) {
+      .hero { grid-template-columns: 1fr; min-height: auto; padding-top: 32px; }
+      .hero svg { max-width: 320px; order: -1; }
+      .stats { grid-template-columns: 1fr; gap: 8px; }
+      .drawer { top: auto; height: 86vh; width: 100%; border-left: 0; border-top: 1px solid var(--rule); border-radius: 16px 16px 0 0; transform: translateY(105%); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .c-dot, .c-num { animation: none; opacity: 1; }
+      .c-line { animation: none; stroke-dashoffset: 0; }
+    }
+  </style>
+</head>
+<body>
+<main>
+  <header class="hero">
+    <div>
+      <h1>{{ person.name }}</h1>
+      <p class="role">{{ person.role }}</p>
+      <p class="cue">{{ person.cue }}</p>
+      <a class="jump" href="#projects">See the projects</a>
+    </div>
+    {# Initials A M as a numbered dot-to-dot. #}
+    {% set pts = [(20,200),(80,20),(140,200),(115,125),(45,125),(170,200),(170,20),(225,120),(280,20),(280,200)] %}
+    <svg viewBox="0 0 300 220" role="img" aria-label="Numbered dots joined into the initials A M">
+      <path class="c-line" pathLength="1" style="animation-delay:1.2s" d="M20 200 L80 20 L140 200 L115 125 L45 125"/>
+      <path class="c-line" pathLength="1" style="animation-delay:1.9s" d="M170 200 L170 20 L225 120 L280 20 L280 200"/>
+      {% for x, y in pts %}
+      <circle class="c-dot" cx="{{ x }}" cy="{{ y }}" r="5" style="animation-delay:{{ loop.index0 * 0.1 }}s"/>
+      <text class="c-num" x="{{ x + 9 }}" y="{{ y - 7 }}" style="animation-delay:{{ loop.index0 * 0.1 }}s">{{ loop.index }}</text>
+      {% endfor %}
+    </svg>
+  </header>
+
+  <section>
+    <h2>About</h2>
+    <p class="profile">{{ person.profile }}</p>
+  </section>
+
+  <section id="projects">
+    <h2>Projects</h2>
+    {% for p in projects %}
+    <article class="project">
+      <h3>{{ p.name }}</h3>
+      <p class="status{% if 'progress' in p.status or 'development' in p.status %} wip{% endif %}">{{ p.status }}</p>
+      <p class="pitch">{{ p.pitch }}</p>
+      <div class="stats">
+        {% for v, l in p.stats %}<div><b>{{ v }}</b><span>{{ l }}</span></div>{% endfor %}
+      </div>
+      <p class="stack">Built with {{ p.stack | join(", ") }}</p>
+      <button type="button" class="talk" hx-get="/chat/open?project={{ p.slug }}" hx-target="#chat">Talk to this project</button>
+    </article>
+    {% endfor %}
+  </section>
+
+  <section>
+    <h2>Skills</h2>
+    <dl class="skills">
+      {% for g, s in skills %}<dt>{{ g }}</dt><dd>{{ s }}</dd>{% endfor %}
+    </dl>
+  </section>
+
+  <section class="item">
+    <h2>Experience</h2>
+    <h3>{{ exp.title }}, {{ exp.org }}</h3>
+    <p class="meta">{{ exp.when }}</p>
+    <ul>{% for x in exp.points %}<li>{{ x }}</li>{% endfor %}</ul>
+  </section>
+
+  <section class="item">
+    <h2>Education</h2>
+    <h3>{{ edu.degree }}</h3>
+    <p class="meta">{{ edu.school }}, {{ edu.when }}</p>
+    <p>{{ edu.note }}</p>
+  </section>
+
+  <section class="item">
+    <h2>Certifications</h2>
+    <ul class="certs">{% for t, o, d in certs %}<li><strong>{{ t }}</strong>, {{ o }}. {{ d }}.</li>{% endfor %}</ul>
+  </section>
+
+  <section class="contact">
+    <h2>Contact</h2>
+    <p><a href="mailto:{{ person.email }}">{{ person.email }}</a></p>
+    <p>Based in {{ person.place }}.</p>
+  </section>
+</main>
+
+<aside class="drawer" aria-label="Project chat">
+  <button type="button" class="close" hx-get="/static/prototype_empty.html" hx-target="#chat">Close</button>
+  {# ?open=<slug> pre-opens the chat, so the open state can be screenshotted. #}
+    {% set o = request.query_params.get("open") %}
+    <section id="chat"{% if o %} hx-get="/chat/open?project={{ o }}" hx-trigger="load"{% endif %}></section>
+</aside>
+{% include "prototype_front_page/_switcher.html" %}
+</body>
+</html>
