@@ -29,5 +29,5 @@ only. Target host: Vercel (Python runtime).
 ## Skills
 - Workflow (spec, plan, start_work, gate, ship, handoff, review): devsystem only.
 - `mattpocock-skills` is enabled for this project only. Use just `prototype`, `tdd`,
-  `diagnosing-bugs`, `grill-me`, always by full name (`/mattpocock-skills:prototype`).
+  `diagnosing-bugs`, `grilling`, always by full name (`/mattpocock-skills:prototype`).
   Never its `to-spec`, `implement`, `handoff` or `code-review`, which clash with devsystem.

@@ -4,11 +4,11 @@
 - `feature/chat-agent` (base `dev` @ a9952d5, 2026-09-25): the per-project chat agent.
 
 ## Current focus
-Chat agent spec, `docs/specs/01_chat_agent.md`: written and waiting for the owner's review.
+Chat agent: spec approved, and the plan `docs/specs/01_chat_agent_impl.md` is written and waiting for the owner's yes before build.
 
 ## Next up
-1. Owner reviews `docs/specs/01_chat_agent.md`. On a yes, `/plan` writes
-   `docs/specs/01_chat_agent_impl.md`.
+1. Owner reviews `docs/specs/01_chat_agent_impl.md`. On a yes, build per its §11 checklist.
+   Needs `OPENAI_API_KEY` in a local `.env` for the live tests.
 2. Steps 02 (front page) and 03 (deploy): see `docs/development_plan.md`.
 
 ## Done
