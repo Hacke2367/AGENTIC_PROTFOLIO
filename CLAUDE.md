@@ -13,6 +13,7 @@ project shape lives in `docs/project_context.md` — read that first, not this f
 - `knowledge/` — the agent-facing context actually loaded at runtime (built from
   `docs/projects/`).
 - `app/` — FastAPI app: `main.py` (routes), `agent.py` (routing/context-switch/OpenAI call),
+  `content.py` (all page copy + slash-command answers), `feedback.py` (private feedback),
   `templates/` (HTMX + Jinja2), `static/` (CSS, no custom JS).
 
 ## Stack

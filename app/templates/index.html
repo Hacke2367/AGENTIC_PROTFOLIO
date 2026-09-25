@@ -1,29 +1,165 @@
 <!doctype html>
+{# Front page (spec 02, variant D). The console embeds the spec 01 chat panel: keep the #chat,
+   #chat-log, #chat-state, #chat-input and #chat-title IDs and the hx-* flow. #}
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Abhishek Maurya</title>
+  <title>{{ person.name }}</title>
+  <meta name="description" content="{{ person.role }}. Every project has its own AI agent you can question.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230C1631'/%3E%3Ctext x='16' y='20.5' font-family='Arial,sans-serif' font-size='12' font-weight='700' fill='white' text-anchor='middle'%3EAM%3C/text%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/static/styles.css">
   <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.4/dist/htmx.min.js"
           integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+"
           crossorigin="anonymous"></script>
+  {# Agent map state, per project: generated so the slugs stay single-sourced (plan 02 D6). #}
+  <style>
+    {%- for p in projects %}
+    .console:has(#chat-title[data-active="{{ p.slug }}"]) .node[data-p="{{ p.slug }}"] { color: var(--ink); }
+    .console:has(#chat-title[data-active="{{ p.slug }}"]) .node[data-p="{{ p.slug }}"] .dot { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 0 5px var(--accent-soft); }
+    .console:has(#chat-title[data-active="{{ p.slug }}"]:not([data-initial])) .node[data-p="{{ p.slug }}"] .dot { animation: ping .8s ease-out; }
+    .console:has(#chat-title[data-active="{{ p.slug }}"]) .edge[data-p="{{ p.slug }}"] { stroke: var(--accent); stroke-width: 2; }
+    .page:has(.project[data-p="{{ p.slug }}"]:hover) .edge[data-p="{{ p.slug }}"] { stroke: var(--accent); }
+    .page:has(.project[data-p="{{ p.slug }}"]:hover) .node[data-p="{{ p.slug }}"] .dot { border-color: var(--accent); }
+    {%- endfor %}
+  </style>
 </head>
 <body>
-  <main>
-    <h1>Abhishek Maurya</h1>
-    {# Step 02 restyles this page; keep #chat and the hx-* attributes. #}
-    <ul class="projects">
-      {% for p in projects %}
-      <li>
-        <span>{{ p.name }}</span>
-        <button type="button" hx-get="/chat/open?project={{ p.slug }}" hx-target="#chat">
-          Talk to this project
-        </button>
-      </li>
+<input type="checkbox" id="sheet" hidden>
+<header class="bar">
+  <div class="bar-in">
+    <a class="brand" href="#top"><span class="mark">AM</span>{{ person.name }}</a>
+    <nav aria-label="Sections">
+      {%- for label, href in nav %}<a href="{{ href }}"{% if href.endswith(".pdf") %} class="primary" download{% endif %}>{{ label }}</a>{% endfor -%}
+    </nav>
+  </div>
+</header>
+
+<div class="page" id="top">
+  <main class="col">
+    <section class="hero">
+      <h1>{{ person.name }}</h1>
+      <p class="role">{{ person.role }}.</p>
+      <p class="cue">{{ person.cue }} <code>/pipeline</code>.</p>
+      <div class="cta">
+        <a class="btn primary" href="#projects">See the projects</a>
+        <a class="btn" href="/static/resume.pdf" download>Download resume (PDF)</a>
+      </div>
+      <div class="flags">
+        {%- for flag, proof in flags %}<details class="flag" name="flags"><summary>{{ flag }}</summary><p>{{ proof }}</p></details>{% endfor -%}
+      </div>
+    </section>
+
+    <section id="projects" class="block">
+      <h2>/projects</h2>
+      {% for p in projects %}{% set card = cards[p.slug] %}
+      <article class="project" data-p="{{ p.slug }}">
+        <div class="shot" aria-hidden="true"><span>{{ card.short }}</span></div>
+        <div>
+          <div class="head">
+            <h3>{{ p.name }}</h3>
+            <span class="status{% if card.in_progress %} wip{% endif %}">{{ card.status }}</span>
+          </div>
+          <p class="pitch">{{ card.pitch }}</p>
+          <dl class="stats">{% for value, label in card.stats %}<div><dt>{{ value }}</dt><dd>{{ label }}</dd></div>{% endfor %}</dl>
+          <p class="stack">{{ card.stack | join(", ") }}</p>
+          <div class="actions">
+            <button type="button" class="talk" hx-get="/chat/open?project={{ p.slug }}" hx-target="#chat">Talk to this project</button>
+            <div class="cmdset" role="group" aria-label="Commands for {{ p.name }}">
+              {%- for command in command_names %}<button type="button" hx-get="/chat/open?project={{ p.slug }}&amp;cmd={{ command }}" hx-target="#chat">/{{ command }}</button>{% endfor -%}
+            </div>
+          </div>
+        </div>
+      </article>
       {% endfor %}
-    </ul>
-    <section id="chat" aria-label="Project chat"></section>
+    </section>
+
+    <section id="why-hire-me" class="block why">
+      <h2>/why-hire-me</h2>
+      <p class="serious">{{ why.serious }}</p>
+      <p class="fun"><b>Less serious:</b> {{ why.fun }}</p>
+    </section>
+
+    <section id="about" class="block">
+      <h2>/about</h2>
+      <p class="profile">{{ person.profile }}</p>
+      <div class="grid2">
+        <section>
+          <h3>Skills</h3>
+          <div class="skills">{% for group, items in skills %}<p><b>{{ group }}</b><span>{{ items }}</span></p>{% endfor %}</div>
+        </section>
+        <div>
+          <section>
+            <h3>Experience</h3>
+            <div class="entry"><b>{{ exp.title }}, {{ exp.org }}</b><span class="m">{{ exp.when }}</span>
+              <ul>{% for point in exp.points %}<li>{{ point }}</li>{% endfor %}</ul></div>
+          </section>
+          <section>
+            <h3>Education</h3>
+            <div class="entry"><b>{{ edu.degree }}</b><span class="m">{{ edu.school }}, {{ edu.when }}. {{ edu.note }}</span></div>
+          </section>
+          <section>
+            <h3>Certifications</h3>
+            {% for title, org, detail in certs %}<div class="entry"><b>{{ title }}, {{ org }}</b><span class="m">{{ detail }}</span></div>{% endfor %}
+          </section>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact" class="block contact">
+      <h2>/contact</h2>
+      <a class="mail" href="mailto:{{ email }}">{{ email }}</a>
+      <p>Based in {{ person.place }}, India.</p>
+      <a class="btn" href="/static/resume.pdf" download>Download resume (PDF)</a>
+    </section>
+
+    <section id="feedback" class="block">
+      <h2>/feedback</h2>
+      <p class="lede">Any feedback on my journey so far? A few honest words help. Only Abhishek reads this.</p>
+      <form class="fb" hx-post="/feedback" hx-swap="outerHTML">
+        <label>Your feedback<textarea name="message" required maxlength="500" placeholder="What stood out, and what could be better?"></textarea></label>
+        <div class="row">
+          <label>Name <span>(optional)</span><input name="name" maxlength="80" autocomplete="name"></label>
+          <label>Company <span>(optional)</span><input name="company" maxlength="80" autocomplete="organization"></label>
+        </div>
+        <label class="hp" aria-hidden="true">Leave this empty<input name="website" tabindex="-1" autocomplete="off"></label>
+        <div id="fb-status" role="status" aria-live="polite"></div>
+        <button type="submit" class="btn primary">Send feedback</button>
+      </form>
+    </section>
+
+    <footer class="foot">
+      <span>© 2026 {{ person.name }}</span>
+      <span>Built with FastAPI, HTMX and OpenAI. No custom JavaScript.</span>
+    </footer>
   </main>
+
+  <aside class="console" aria-label="Project agents">
+    <label class="c-head" for="sheet">
+      <span><strong>Talk to a project</strong><span class="online">{{ projects | length }} agents online</span></span>
+      <span class="peek"><span class="when-closed">Open</span><span class="when-open">Close</span></span>
+    </label>
+    <div class="map">
+      <svg viewBox="0 0 400 164" preserveAspectRatio="none" aria-hidden="true">
+        <path class="edge" style="--i: 0" pathLength="1" d="M24 82 L120 82"/>
+        {%- for p in projects %}{% set y = 18 + loop.index0 * 32 %}
+        <path class="edge" data-p="{{ p.slug }}" style="--i: {{ loop.index }}" pathLength="1" d="M120 82 C 178 82, 178 {{ y }}, 236 {{ y }}"/>
+        {%- endfor %}
+        <circle class="hub" cx="24" cy="82" r="6"/>
+        <circle class="hub router" cx="120" cy="82" r="7"/>
+        <text x="24" y="104" text-anchor="middle">you</text>
+        <text x="120" y="104" text-anchor="middle">router</text>
+      </svg>
+      {%- for p in projects %}{% set y = 18 + loop.index0 * 32 %}
+      <button type="button" class="node" data-p="{{ p.slug }}" style="--i: {{ loop.index }}; top: {{ (y / 164 * 100) | round(3) }}%"
+              hx-get="/chat/open?project={{ p.slug }}" hx-target="#chat"><span class="dot"></span>{{ cards[p.slug].short }}</button>
+      {%- endfor %}
+    </div>
+    <section id="chat" aria-label="Project chat">{% include "chat_panel.html" %}</section>
+  </aside>
+</div>
 </body>
 </html>

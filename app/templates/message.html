@@ -1,5 +1,7 @@
+{% if cmd %}{% include "_command.html" %}{% else %}
 {% if user_text %}<div class="msg user">{{ user_text }}</div>{% endif %}
 {% if switched_to %}<div class="switch-notice" role="status">Switching to {{ switched_to }}</div>{% endif %}
 <div class="msg {{ kind }}">{{ reply }}</div>
+{% endif %}
 {% if state_token %}{% set oob = true %}{% include "_chat_fields.html" %}{% endif %}
-{% if switched_to %}<h3 id="chat-title" hx-swap-oob="true">{{ switched_to }}</h3>{% endif %}
+{% if switched_to %}<h3 id="chat-title" data-active="{{ switched_slug }}" hx-swap-oob="true">{{ switched_to }}</h3>{% endif %}

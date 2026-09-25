@@ -36,7 +36,7 @@ def _daily_budget_micro() -> int:
 
 # --- store: Upstash REST pipeline, or process memory --------------------------------------
 
-_memory: dict[str, tuple[int, float]] = {}  # key -> (value, expires_at)
+_memory: dict[str, tuple[object, float]] = {}  # key -> (value, expires_at); lists for LPUSH
 
 
 def reset_memory() -> None:
@@ -64,6 +64,14 @@ def _memory_run(cmd: list[str]):
         if value is not None:
             _memory[key] = (value, now + int(cmd[2]))
         return 1
+    if op == "LPUSH":  # feedback list (plan 02 D9)
+        items = [cmd[2], *(value or [])]
+        _memory[key] = (items, exp if value is not None else 0.0)
+        return len(items)
+    if op == "LTRIM":  # LTRIM key start stop (inclusive)
+        if value is not None:
+            _memory[key] = (value[int(cmd[2]):int(cmd[3]) + 1], exp)
+        return "OK"
     raise ValueError(op)
 
 
