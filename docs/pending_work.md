@@ -1,6 +1,6 @@
 # Pending Work
 
-Last updated: 2026-09-26 (spec 02 ready for review)
+Last updated: 2026-09-26 (spec 02 approved, plan written)
 
 ## WIP
 - `feature/front-page` (base `dev` @ 837c5ec, 2026-09-26): the front page. Uncommitted
@@ -9,7 +9,8 @@ Last updated: 2026-09-26 (spec 02 ready for review)
   `app/static/prototype_empty.html`); capture it on a `spike/` branch once a variant wins.
 
 ## Current focus
-Step 02 (front page), stage `Spec`. The owner picked prototype variant D (`?variant=d`: Geist +
+Step 02 (front page), stage `Plan`. Spec 02 approved by the owner on 2026-09-26; plan at
+`docs/specs/02_front_page_impl.md`; prototype captured on `spike/front-page-prototype` @ 10c42cc. The owner picked prototype variant D (`?variant=d`: Geist +
 electric blue agent console) and wants it polished to a premium finish; `frontend-design` was
 adopted for that (P-002). Round 1: the owner kept B's two-pane layout and rejected A and C;
 round 2: D chosen over E (Satoshi + saffron). Polish pass done (the owner is reviewing it):
@@ -30,10 +31,10 @@ Owner decisions so far (2026-09-26), to carry into `docs/specs/02_front_page.md`
 - Image slots stay empty for now; GitHub/LinkedIn stay pending (email only).
 
 ## Next up
-1. **Resume point.** `docs/specs/02_front_page.md` (v1.0.0) is ready for the owner's review.
-   The owner will also send design tweaks for polished D (`?variant=d`); they amend spec §4/§7.
-   On the owner's yes: capture the prototype on `spike/front-page-prototype`, then `/plan`
-   → `docs/specs/02_front_page_impl.md`, then build. The owner approves it, then `/plan`,
+1. **Resume point.** Build step 02 from `docs/specs/02_front_page_impl.md` §11 (build
+   checklist), starting with removing the prototype from the working tree. The owner's design
+   tweaks for D can arrive any time; they amend spec §7. Before merge: the owner approves the
+   20 command answers, the 6 flags and the `/why-hire-me` text (AC18). The owner approves it, then `/plan`,
    then build. Run the prototype: `./venv/Scripts/python.exe -m uvicorn app.main:app --port 8765`.
    Read first: `docs/development_plan.md` (step 02 row), `app/prototype_front_page.py` (all
    draft copy: tags, why-hire-me, the 20 command answers), and `app/templates/` (keep the
