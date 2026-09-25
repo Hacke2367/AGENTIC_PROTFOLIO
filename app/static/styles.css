@@ -1,0 +1,38 @@
+/* Chat styles only. Step 02 owns the page theme and layout. */
+:root {
+  --ink: #1d2433;
+  --muted: #5b6475;
+  --line: #d9dee8;
+  --user-bg: #e8eefc;
+  --reply-bg: #f5f6f8;
+  --notice-bg: #fff6e0;
+  --error-bg: #fdecec;
+  --accent: #2f5bd3;
+}
+
+body { margin: 0; font: 16px/1.5 system-ui, sans-serif; color: var(--ink); background: #fff; }
+main { max-width: 760px; margin: 0 auto; padding: 24px 16px; }
+
+.chat-panel { border: 1px solid var(--line); border-radius: 12px; padding: 16px; margin-top: 16px; }
+#chat-title { margin: 0 0 12px; font-size: 1.05rem; }
+#chat-log { display: flex; flex-direction: column; gap: 8px; max-height: 60vh; overflow-y: auto; }
+
+.msg { padding: 10px 12px; border-radius: 10px; max-width: 85%; white-space: pre-wrap; overflow-wrap: anywhere; }
+.msg.user { align-self: flex-end; background: var(--user-bg); }
+.msg.reply { align-self: flex-start; background: var(--reply-bg); }
+.msg.notice { align-self: stretch; background: var(--notice-bg); max-width: none; }
+.msg.error { align-self: stretch; background: var(--error-bg); max-width: none; }
+
+.switch-notice { align-self: center; font-size: 0.85rem; color: var(--accent); font-weight: 600; }
+
+.chat-panel form { display: flex; gap: 8px; margin-top: 12px; }
+#chat-input { flex: 1; min-width: 0; padding: 10px 12px; border: 1px solid var(--line); border-radius: 8px; font: inherit; }
+.chat-panel button { padding: 10px 16px; border: 0; border-radius: 8px; background: var(--accent); color: #fff; font: inherit; cursor: pointer; }
+.chat-panel button:disabled { opacity: 0.6; cursor: default; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+#typing { margin: 8px 0 0; color: var(--muted); font-size: 0.9rem; }
+#typing.htmx-indicator { opacity: 0; transition: opacity 150ms; }
+#typing.htmx-request { opacity: 1; }
+
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }

@@ -4,12 +4,14 @@
 - `feature/chat-agent` (base `dev` @ a9952d5, 2026-09-25): the per-project chat agent.
 
 ## Current focus
-Chat agent: spec approved, and the plan `docs/specs/01_chat_agent_impl.md` is written and waiting for the owner's yes before build.
+Chat agent build (`docs/specs/01_chat_agent_impl.md`). The code, knowledge files and offline
+tests are done, and all 13 offline tests pass. Waiting on the live tests.
 
 ## Next up
-1. Owner reviews `docs/specs/01_chat_agent_impl.md`. On a yes, build per its §11 checklist.
-   Needs `OPENAI_API_KEY` in a local `.env` for the live tests.
-2. Steps 02 (front page) and 03 (deploy): see `docs/development_plan.md`.
+1. Owner adds `.env` with `OPENAI_API_KEY`, then run `python -m pytest -m live -s` and hand-check
+   the AC2 answers.
+2. `/ship` step 01 (PR into `dev`).
+3. Steps 02 (front page) and 03 (deploy): see `docs/development_plan.md`.
 
 ## Done
 - 2026-09-25: `chore/scaffold` merged into `dev` (PR #1). Docs, tracking files, and the

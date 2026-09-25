@@ -247,12 +247,12 @@ ones need `OPENAI_API_KEY` in `.env`.
 | (perf, info) | `pytest -m live -k latency -s` | Prints per-call latency. Target: median < 6 s (spec §9). This one does not gate |
 
 ## 11. Build Checklist
-- [ ] Curate `knowledge/` (5 projects + the owner profile) from `docs/projects/` and `docs/resume.md`
-- [ ] `app/agent.py`: registry, router, prompt, answer
-- [ ] `app/limits.py`: KV + memory, check, record_spend
-- [ ] `app/main.py`: state signing, routes, CSP
-- [ ] Templates + chat CSS
-- [ ] `requirements-dev.txt`, `pytest.ini`, `.env.example`, gate in `.claude/devsystem.json`
-- [ ] `tests/test_offline.py` green (`python -m pytest -q`)
+- [x] Curate `knowledge/` (5 projects + the owner profile) from `docs/projects/` and `docs/resume.md`
+- [x] `app/agent.py`: registry, router, prompt, answer
+- [x] `app/limits.py`: KV + memory, check, record_spend
+- [x] `app/main.py`: state signing, routes, CSP
+- [x] Templates + chat CSS
+- [x] `requirements-dev.txt`, `pytest.ini`, `.env.example`, gate in `.claude/devsystem.json`
+- [x] `tests/test_offline.py` green (`python -m pytest -q`)
 - [ ] `tests/test_live.py` run with the real key; the AC2 hand check is done
 - [ ] Manual smoke test: `uvicorn app.main:app` → open each project, switch once, hit clarify once

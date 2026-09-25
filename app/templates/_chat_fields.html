@@ -1,0 +1,4 @@
+{# Shared by chat_panel.html (initial) and message.html (hx-swap-oob refresh). #}
+<input type="hidden" id="chat-state" name="state" value="{{ state_token }}"{% if oob %} hx-swap-oob="true"{% endif %}>
+<input type="text" id="chat-input" name="message" required maxlength="500" autocomplete="off"
+       placeholder="Ask about this project…" aria-label="Your question"{% if oob %} autofocus hx-swap-oob="true"{% endif %}>
