@@ -4,13 +4,12 @@
 - `feature/chat-agent` (base `dev` @ a9952d5, 2026-09-25): the per-project chat agent.
 
 ## Current focus
-Chat agent spec: `docs/specs/01_chat_agent.md`.
+Chat agent spec, `docs/specs/01_chat_agent.md`: written and waiting for the owner's review.
 
 ## Next up
-1. `/spec` → `docs/specs/01_chat_agent.md`: routing and context switch, rate limiting, and the
-   red lines. After that, wait for the owner's yes before `/plan`.
-2. `/spec` for the front page: resume layout, load animation, and theme.
-3. `/plan` both specs.
+1. Owner reviews `docs/specs/01_chat_agent.md`. On a yes, `/plan` writes
+   `docs/specs/01_chat_agent_impl.md`.
+2. Steps 02 (front page) and 03 (deploy): see `docs/development_plan.md`.
 
 ## Done
 - 2026-09-25: `chore/scaffold` merged into `dev` (PR #1). Docs, tracking files, and the
