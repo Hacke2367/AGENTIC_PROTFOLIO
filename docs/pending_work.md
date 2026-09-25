@@ -1,6 +1,6 @@
 # Pending Work
 
-Last updated: 2026-09-26 (variant D picked, frontend-design adopted)
+Last updated: 2026-09-26 (spec 02 ready for review)
 
 ## WIP
 - `feature/front-page` (base `dev` @ 837c5ec, 2026-09-26): the front page. Uncommitted
@@ -12,7 +12,10 @@ Last updated: 2026-09-26 (variant D picked, frontend-design adopted)
 Step 02 (front page), stage `Spec`. The owner picked prototype variant D (`?variant=d`: Geist +
 electric blue agent console) and wants it polished to a premium finish; `frontend-design` was
 adopted for that (P-002). Round 1: the owner kept B's two-pane layout and rejected A and C;
-round 2: D chosen over E (Satoshi + saffron).
+round 2: D chosen over E (Satoshi + saffron). Polish pass done (the owner is reviewing it):
+AA-contrast tokens (midnight ink #0C1631), hero CTAs, `/resume` emphasised in the bar,
+title-card image slots, segmented command controls, the active agent pings on switch, favicon,
+footer, tidier mobile.
 
 Owner decisions so far (2026-09-26), to carry into `docs/specs/02_front_page.md`:
 - The page shows email only, no phone. `/resume` serves the PDF, phone number included.
@@ -27,9 +30,10 @@ Owner decisions so far (2026-09-26), to carry into `docs/specs/02_front_page.md`
 - Image slots stay empty for now; GitHub/LinkedIn stay pending (email only).
 
 ## Next up
-1. **Resume point.** Polish variant D in the prototype with `frontend-design` (critique, then
-   fixes; the owner reviews), then write `docs/specs/02_front_page.md` from the decisions above
-   and the polished D. The owner approves it, then `/plan`,
+1. **Resume point.** `docs/specs/02_front_page.md` (v1.0.0) is ready for the owner's review.
+   The owner will also send design tweaks for polished D (`?variant=d`); they amend spec §4/§7.
+   On the owner's yes: capture the prototype on `spike/front-page-prototype`, then `/plan`
+   → `docs/specs/02_front_page_impl.md`, then build. The owner approves it, then `/plan`,
    then build. Run the prototype: `./venv/Scripts/python.exe -m uvicorn app.main:app --port 8765`.
    Read first: `docs/development_plan.md` (step 02 row), `app/prototype_front_page.py` (all
    draft copy: tags, why-hire-me, the 20 command answers), and `app/templates/` (keep the
