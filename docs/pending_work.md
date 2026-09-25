@@ -12,7 +12,7 @@ tests are done, and all 13 offline tests pass.
 - Re-run on 2026-09-26: 11/11 non-QA live tests pass, and 13/13 offline tests pass.
 
 ## Next up
-1. Owner reviews and merges the step 01 PR (`/merge_pr`).
+1. Owner reviews and merges PR #2 (https://github.com/Hacke2367/AGENTIC_PROTFOLIO/pull/2) with `/merge_pr 2`.
 2. Steps 02 (front page) and 03 (deploy): see `docs/development_plan.md`.
 
 ## Done

@@ -9,7 +9,7 @@ Statuses: `Todo` → `Spec` → `Plan` → `Build` → `Review` → `Done`.
 | # | Step | Branch | Status | Spec | PR |
 |---|---|---|---|---|---|
 | 00 | Scaffold: docs, tracking, FastAPI + HTMX skeleton | `chore/scaffold` | Done | n/a | #1 |
-| 01 | Chat agent: knowledge curation, routing and context switch, caps, red lines | `feature/chat-agent` | Review | `specs/01_chat_agent.md` | |
+| 01 | Chat agent: knowledge curation, routing and context switch, caps, red lines | `feature/chat-agent` | Review | `specs/01_chat_agent.md` | #2 |
 | 02 | Front page: resume sections, project cards, light theme, load animation | `feature/front-page` | Todo | | |
 | 03 | Deploy: Vercel, env vars, OpenAI budget backstop, public URL | `chore/deploy` | Todo | | |
 
