@@ -1,5 +1,7 @@
 # Pending Work
 
+Last updated: 2026-09-26 (handoff after shipping step 01)
+
 ## WIP
 - `feature/chat-agent` (base `dev` @ a9952d5, 2026-09-25): the per-project chat agent.
 
@@ -12,8 +14,17 @@ tests are done, and all 13 offline tests pass.
 - Re-run on 2026-09-26: 11/11 non-QA live tests pass, and 13/13 offline tests pass.
 
 ## Next up
-1. Owner reviews and merges PR #2 (https://github.com/Hacke2367/AGENTIC_PROTFOLIO/pull/2) with `/merge_pr 2`.
-2. Steps 02 (front page) and 03 (deploy): see `docs/development_plan.md`.
+1. **Resume point.** Step 01 (chat agent) is in `Review`, with PR #2
+   (https://github.com/Hacke2367/AGENTIC_PROTFOLIO/pull/2) open into `dev`. The build checklist
+   is complete, the gate passes 13/13, and the live tests are green. **Waiting on the owner:**
+   "PR 2 merge karo" → `/merge_pr 2`. Then `/start_work` picks step 02 (`feature/front-page`),
+   then `/spec` (front page: resume sections, project cards, light theme, one load animation).
+   During the spec, run `/mattpocock-skills:prototype` with the frontend-design skill for 2-3 UI
+   directions. Then `/plan`, then build.
+   Read first: `docs/development_plan.md` (step 02 row), `docs/resume.md`, `knowledge/`, and
+   `app/templates/` (keep the `#chat`, `#chat-log`, `#chat-state`, `#chat-input` and
+   `#chat-title` IDs and the `hx-*` attributes).
+2. Step 03 (deploy): see `docs/development_plan.md`.
 
 ## Done
 - 2026-09-25: `chore/scaffold` merged into `dev` (PR #1). Docs, tracking files, and the
