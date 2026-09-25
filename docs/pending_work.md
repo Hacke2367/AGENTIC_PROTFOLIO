@@ -1,6 +1,6 @@
 # Pending Work
 
-Last updated: 2026-09-26 (spec 02 approved, plan written)
+Last updated: 2026-09-26 (step 02 built, not shipped)
 
 ## WIP
 - `feature/front-page` (base `dev` @ 837c5ec, 2026-09-26): the front page. Uncommitted
@@ -9,7 +9,8 @@ Last updated: 2026-09-26 (spec 02 approved, plan written)
   `app/static/prototype_empty.html`); capture it on a `spike/` branch once a variant wins.
 
 ## Current focus
-Step 02 (front page), stage `Plan`. Spec 02 approved by the owner on 2026-09-26; plan at
+Step 02 (front page), stage `Build`: built and verified (55 offline tests, 20/20 browser
+checks), not yet shipped. Spec 02 approved by the owner on 2026-09-26; plan at
 `docs/specs/02_front_page_impl.md`; prototype captured on `spike/front-page-prototype` @ 10c42cc. The owner picked prototype variant D (`?variant=d`: Geist +
 electric blue agent console) and wants it polished to a premium finish; `frontend-design` was
 adopted for that (P-002). Round 1: the owner kept B's two-pane layout and rejected A and C;
@@ -31,10 +32,10 @@ Owner decisions so far (2026-09-26), to carry into `docs/specs/02_front_page.md`
 - Image slots stay empty for now; GitHub/LinkedIn stay pending (email only).
 
 ## Next up
-1. **Resume point.** Build step 02 from `docs/specs/02_front_page_impl.md` §11 (build
-   checklist), starting with removing the prototype from the working tree. The owner's design
-   tweaks for D can arrive any time; they amend spec §7. Before merge: the owner approves the
-   20 command answers, the 6 flags and the `/why-hire-me` text (AC18). The owner approves it, then `/plan`,
+1. **Resume point.** Step 02 is built on `feature/front-page`. Next: the owner reviews it
+   locally (`uvicorn app.main:app`), sends design tweaks (they amend spec §7), and approves
+   the content in `app/content.py` (20 command answers, 6 flags, `/why-hire-me`: AC18). Then
+   `/ship` opens the PR into `dev`. The owner approves it, then `/plan`,
    then build. Run the prototype: `./venv/Scripts/python.exe -m uvicorn app.main:app --port 8765`.
    Read first: `docs/development_plan.md` (step 02 row), `app/prototype_front_page.py` (all
    draft copy: tags, why-hire-me, the 20 command answers), and `app/templates/` (keep the
@@ -52,9 +53,12 @@ Owner decisions so far (2026-09-26), to carry into `docs/specs/02_front_page.md`
 ## Open items
 - [ ] **Owner: revoke/rotate the OpenAI key pasted in chat on 2026-09-26** after testing, and put
       the new key in `.env` only.
-- [ ] Get the GitHub and LinkedIn URLs from the owner (resume contact links).
-- [ ] Compress `app/static/resume.pdf` (4.2 MB) before it ships.
+- [ ] GitHub and LinkedIn URLs, found in the resume PDF's links: `github.com/Hacke2367` and
+      `linkedin.com/in/abhishek-maurya-148542292`. The owner confirms before they go on `/contact`.
 - [ ] Resolve the open questions in `docs/projects/projects_summary.md`: repo visibility, hero
       demos, public project names, and how to frame the AI-assisted work.
 - [ ] Revoke or rotate the leaked key described in `docs/projects/01_manim_code_video_template.md`
-      before linking that repo publicly.
+      before linking that repo publicly. **This now blocks deploy (step 03):** the resume PDF
+      served at `/resume` links `github.com/Hacke2367/Auto_shorts_engine_1`.
+- [ ] FYI for the owner: the resume PDF has two typos ("synchronizatio", and "API ra te limits
+      securely.search" in the AutoShorts bullets). Fix them in the source and re-export if wanted.

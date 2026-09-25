@@ -320,14 +320,20 @@ The gate is `./venv/Scripts/python.exe -m pytest -q` (offline). `tests/test_fron
 | (perf) | `pytest F -k page_weight` | `len(GET /) + len(styles.css)` < 100,000 bytes (spec §11) |
 
 ## 11. Build Checklist
-- [ ] Remove the prototype from the working tree (the spike branch keeps it)
-- [ ] `app/content.py` with the D13 corrections; `app/limits.py` memory ops; `app/feedback.py`
-- [ ] `app/main.py`: `panel_context`, `index`, `open_chat` (`cmd`), the command branch in `chat`,
+- [x] Remove the prototype from the working tree (the spike branch keeps it)
+- [x] `app/content.py` with the D13 corrections; `app/limits.py` memory ops; `app/feedback.py`
+- [x] `app/main.py`: `panel_context`, `index`, `open_chat` (`cmd`), the command branch in `chat`,
   `POST /feedback`
-- [ ] Templates: `index.html`, `chat_panel.html`, `message.html`, `_chat_fields.html`, `_command.html`
-- [ ] `styles.css`: the variant D theme; chat selectors intact
-- [ ] `tests/conftest.py` move, then `tests/test_front_page.py`, all green
-- [ ] Resume PDF ≤ 1 MB (§5.6), or ask the owner
-- [ ] `.env.example`, and the `CLAUDE.md` pointer line
-- [ ] Manual: AC9, AC10, AC11, AC15 in a browser; screenshots in the PR
+- [x] Templates: `index.html`, `chat_panel.html`, `message.html`, `_chat_fields.html`, `_command.html`
+- [x] `styles.css`: the variant D theme; chat selectors intact
+- [x] `tests/conftest.py` move, then `tests/test_front_page.py`, all green (55 offline tests)
+- [x] Resume PDF ≤ 1 MB (§5.6): 4.2 MB → 359 KB by subsetting the embedded Segoe UI Emoji font
+  to the 4 glyphs used (fontTools); a PyMuPDF render is pixel-identical, and all 12 links are kept
+- [x] `.env.example`, and the `CLAUDE.md` pointer line
+- [x] Browser checks over Chrome DevTools, a throwaway harness that isn't committed: 20/20.
+  - AC11: no sideways scroll at 1440/1024/768/390/320 px, even with every flag proof open.
+  - AC10: reduced motion stops the map. The sheet opens and closes, commands answer, and the
+    log scrolls to the newest turn.
+  - AC9: row hover lights its line.
+  - AC15: all 57 controls are reachable by Tab, each with a focus ring.
 - [ ] Owner approval of the content (AC18), recorded in the PR
