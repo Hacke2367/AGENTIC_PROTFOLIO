@@ -51,7 +51,8 @@ def test_qa_for_hand_check(slug):
 
 
 def test_unknown_fact_is_not_invented():
-    assert has(ask("autoshorts", "How many users does AutoShorts have?"), agent.UNKNOWN)
+    # Must be truly absent from knowledge/ (audience size is covered: "no audience data yet").
+    assert has(ask("autoshorts", "How many GitHub stars does AutoShorts have?"), agent.UNKNOWN)
 
 
 def test_authorship_framing():
